@@ -1,14 +1,36 @@
 services:
+  db:
+    image: postgres:16.0
+    volumes:
+      - python_test_task2-volume:/var/lib/postgresql/data
+    env_file:
+      - .env
+    ports:
+      - "5432:5432"
+    networks:
+      - python_test_task2-network
+    container_name: python_test_task2-db
+    healthcheck:
+      test: [ "CMD-SHELL", "sh -c 'pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}'" ]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+
   bot:
     build: .
     command: bash start_bot.sh
     volumes:
       - ./:/code/
     networks:
-      - test_task-network
-
+      - python_test_task2-network
+    depends_on:
+      db:
+        condition: service_healthy
     container_name: python_test_task2
     restart: always
 
+volumes:
+  python_test_task2-volume:
+
 networks:
-  test_task-network:
+  python_test_task2-network:
