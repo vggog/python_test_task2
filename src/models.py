@@ -1,7 +1,7 @@
 from datetime import datetime
 
-from sqlalchemy.orm import DeclarativeBase
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy import BigInteger
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 
 class BaseModel(DeclarativeBase):
@@ -16,5 +16,5 @@ class BaseModel(DeclarativeBase):
 class QueryHistoryModel(BaseModel):
     __tablename__ = "query_history"
 
-    user_id: Mapped[int]
-    vendor_code: Mapped[int]
+    user_id: Mapped[int] = mapped_column(BigInteger)
+    vendor_code: Mapped[int] = mapped_column(BigInteger)

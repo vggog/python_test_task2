@@ -38,7 +38,7 @@ async def get_info_from_wb(message: Message, state: FSMContext):
     service = Service()
 
     await message.answer(
-        service.get_info_from_wb(message.text),
+        service.get_info_from_wb(message.text, message.from_user.id),
         reply_markup=menu_buttons(),
     )
     await state.clear()
