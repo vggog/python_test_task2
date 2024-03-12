@@ -42,3 +42,14 @@ async def get_info_from_wb(message: Message, state: FSMContext):
         reply_markup=menu_buttons(),
     )
     await state.clear()
+
+
+@router.message(F.text == "Получить информацию из БД")
+async def get_query_history(message: Message):
+    """Ручка для получения истории запросов пользователя"""
+    service = Service()
+
+    await message.answer(
+        service.get_query_history(message.from_user.id),
+        reply_markup=menu_buttons(),
+    )

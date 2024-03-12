@@ -1,4 +1,6 @@
-from sqlalchemy import insert, create_engine
+from typing import Sequence
+
+from sqlalchemy import insert, select, desc, create_engine
 from sqlalchemy.orm import Session
 
 from .models import QueryHistoryModel
@@ -26,3 +28,16 @@ class Repository:
 
         with Session(self.engine) as session:
             session.execute(stmt)
+            session.commit()
+
+    def get_last_five_queries(self, user_id: int) -> Sequence[QueryHistoryModel]:
+        """Метод для получения последних 5 созданных записей запросов"""
+        stmt = (
+            select(QueryHistoryModel)
+            .where(QueryHistoryModel.user_id == user_id)
+            .order_by(desc(QueryHistoryModel.created_at))
+            .limit(5)
+        )
+
+        with Session(self.engine) as session:
+            return session.execute(stmt).scalars().all()
