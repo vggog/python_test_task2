@@ -1,8 +1,11 @@
-from aiogram import Router
-from aiogram.types import Message
+from aiogram import Router, F
+from aiogram.types import Message, ReplyKeyboardRemove
 from aiogram.filters import CommandStart
+from aiogram.fsm.context import FSMContext
 
 from .buttons import menu_buttons
+from .states import VendorCodeState
+from .service import Service
 
 
 router = Router()
@@ -17,3 +20,25 @@ async def start_handler(message: Message):
         parse_mode="HTML",
         reply_markup=menu_buttons(),
     )
+
+
+@router.message(F.text == "Получить информацию по товару")
+async def get_vendor_code(message: Message, state: FSMContext):
+    """Метод для запроса у пользователя артикула"""
+    await message.answer(
+        "Введите артикул:",
+        reply_markup=ReplyKeyboardRemove(),
+    )
+    await state.set_state(VendorCodeState.vendor_code)
+
+
+@router.message(VendorCodeState.vendor_code)
+async def get_info_from_wb(message: Message, state: FSMContext):
+    """Метод для получения информации с карточки"""
+    service = Service()
+
+    await message.answer(
+        service.get_info_from_wb(message.text),
+        reply_markup=menu_buttons(),
+    )
+    await state.clear()

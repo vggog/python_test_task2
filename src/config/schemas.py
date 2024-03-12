@@ -9,3 +9,8 @@ load_dotenv()
 @dataclass
 class BotSettings:
     token: str
+
+
+@dataclass
+class Statics:
+    card_info_url: str
