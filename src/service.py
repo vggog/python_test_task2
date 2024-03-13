@@ -72,3 +72,11 @@ class Service:
         )
 
         return "Вы подписались на уведомления"
+
+    @staticmethod
+    def delete_subscribe(
+            user_id: int,
+            repository: Repository = Repository(),
+    ):
+        """Сервис для остановки подписка на уведомления"""
+        repository.delete_subscribe(user_id)

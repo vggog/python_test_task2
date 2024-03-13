@@ -55,6 +55,13 @@ async def subscribe_to_notifications(callback: CallbackQuery):
     await callback.message.answer(description)
 
 
+@router.message(F.text == "Остановить уведомления")
+async def get_query_history(message: Message):
+    """Ручка для остановки уведомлений"""
+    Service.delete_subscribe(message.from_user.id)
+    await message.answer("Уведомления остановлены")
+
+
 @router.message(F.text == "Получить информацию из БД")
 async def get_query_history(message: Message):
     """Ручка для получения истории запросов пользователя"""

@@ -1,6 +1,6 @@
 from typing import Sequence
 
-from sqlalchemy import insert, select, desc, create_engine
+from sqlalchemy import insert, select, desc, create_engine, delete
 from sqlalchemy.orm import Session
 
 from .models import QueryHistoryModel, BaseModel, SubscriptionToNotificationsModel
@@ -60,3 +60,16 @@ class Repository:
 
         with Session(self.engine) as session:
             return session.execute(stmt).scalars().first()
+
+    def delete_subscribe(self, user_id):
+        """
+        Метод для удаления подписки на уведомления из таблицы
+        subscription_to_notifications
+        """
+        stmt = delete(SubscriptionToNotificationsModel).where(
+            SubscriptionToNotificationsModel.user_id == user_id
+        )
+
+        with Session(self.engine) as session:
+            session.execute(stmt)
+            session.commit()
