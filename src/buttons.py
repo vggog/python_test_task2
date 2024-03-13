@@ -1,4 +1,4 @@
-from aiogram.types import KeyboardButton, ReplyKeyboardMarkup
+from aiogram.types import KeyboardButton, ReplyKeyboardMarkup, InlineKeyboardButton, InlineKeyboardMarkup
 
 
 def menu_buttons() -> ReplyKeyboardMarkup:
@@ -13,3 +13,17 @@ def menu_buttons() -> ReplyKeyboardMarkup:
         keyboard=keyboard,
         resize_keyboard=True,
     )
+
+
+def subscribe_button(vendor_code: str) -> InlineKeyboardMarkup:
+    """Inline-кнопка для возможности подписаться на уведомления."""
+    keyboard = [
+        [
+            InlineKeyboardButton(
+                text="Подписаться на уведомления",
+                callback_data=f"subscribe_{vendor_code}"
+            ),
+        ]
+    ]
+
+    return InlineKeyboardMarkup(inline_keyboard=keyboard)

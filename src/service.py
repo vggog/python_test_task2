@@ -3,6 +3,7 @@ import requests
 from .schemas import CardSchema
 from .config import statics
 from .repository import Repository
+from .models import QueryHistoryModel, SubscriptionToNotificationsModel
 
 
 class Service:
@@ -24,9 +25,10 @@ class Service:
         except IndexError:
             return "Карточка не найдена, возможно артикул не верный"
 
-        repository.add_query_to_history(
+        repository.add_record(
             user_id=user_id,
             vendor_code=int(vendor_code),
+            table=QueryHistoryModel,
         )
 
         return (
@@ -52,3 +54,21 @@ class Service:
             query_history += f"{query.created_at: %d.%m.%Y} | {query.vendor_code} \n"
 
         return query_history
+
+    @staticmethod
+    def add_subscribe_to_notification(
+            user_id: int,
+            vendor_code: int,
+            repository: Repository = Repository(),
+    ) -> str:
+        """Сервис для возможности подписаться на уведомления"""
+        if repository.is_subscribe_in_db(user_id, vendor_code) is not None:
+            return "Вы уже подписаны на уведомление"
+
+        repository.add_record(
+            user_id=user_id,
+            vendor_code=vendor_code,
+            table=SubscriptionToNotificationsModel,
+        )
+
+        return "Вы подписались на уведомления"

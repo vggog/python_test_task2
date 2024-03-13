@@ -18,3 +18,10 @@ class QueryHistoryModel(BaseModel):
 
     user_id: Mapped[int] = mapped_column(BigInteger)
     vendor_code: Mapped[int] = mapped_column(BigInteger)
+
+
+class SubscriptionToNotificationsModel(BaseModel):
+    __tablename__ = "subscription_to_notifications"
+
+    user_id: Mapped[int] = mapped_column(BigInteger)
+    vendor_code: Mapped[int] = mapped_column(BigInteger)
