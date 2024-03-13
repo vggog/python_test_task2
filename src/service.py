@@ -9,21 +9,39 @@ from .models import QueryHistoryModel, SubscriptionToNotificationsModel
 class Service:
 
     @staticmethod
-    def get_info_from_wb(
+    def info_from_card(
             vendor_code: str,
-            user_id: int,
-            repository: Repository = Repository()
-    ) -> str:
+    ) -> tuple[bool, str]:
         """Метод для получения карточки товара."""
         info = requests.get(statics.card_info_url + vendor_code)
 
         if info.status_code != 200:
-            return "Возникла ошибка"
+            return False, "Возникла ошибка"
 
         try:
             card_info = CardSchema(**(info.json()["data"]["products"][0]))
         except IndexError:
-            return "Карточка не найдена, возможно артикул не верный"
+            return False, "Карточка не найдена, возможно артикул не верный"
+
+        return True, (
+            f"Название товара: {card_info.name}\n"
+            f"Артикул: {card_info.id}\n"
+            f"Цена: {card_info.salePriceU / 100} руб.\n"
+            f"Рейтинг: {card_info.supplierRating}\n"
+            f"Количество на всех складах: {card_info.wh}\n"
+        )
+
+    def get_info_from_wb(
+            self,
+            vendor_code: str,
+            user_id: int,
+            repository: Repository = Repository()
+    ) -> str:
+        """Метод для сохранение истории запроса, и отправки карточки товара"""
+        status, info = self.info_from_card(vendor_code)
+
+        if not status:
+            return info
 
         repository.add_record(
             user_id=user_id,
@@ -31,13 +49,7 @@ class Service:
             table=QueryHistoryModel,
         )
 
-        return (
-                f"Название товара: {card_info.name}\n"
-                f"Артикул: {card_info.id}\n"
-                f"Цена: {card_info.salePriceU / 100} руб.\n"
-                f"Рейтинг: {card_info.supplierRating}\n"
-                f"Количество на всех складах: {card_info.wh}\n"
-        )
+        return info
 
     def get_query_history(
             self,

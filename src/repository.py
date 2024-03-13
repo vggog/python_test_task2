@@ -3,7 +3,11 @@ from typing import Sequence
 from sqlalchemy import insert, select, desc, create_engine, delete
 from sqlalchemy.orm import Session
 
-from .models import QueryHistoryModel, BaseModel, SubscriptionToNotificationsModel
+from .models import (
+    QueryHistoryModel,
+    BaseModel,
+    SubscriptionToNotificationsModel
+)
 from .config import db_config
 
 
@@ -73,3 +77,12 @@ class Repository:
         with Session(self.engine) as session:
             session.execute(stmt)
             session.commit()
+
+    def get_all_subscribers_for_notifications(
+            self
+    ) -> Sequence[SubscriptionToNotificationsModel]:
+        """Метод для получения всех подписок на уведомления"""
+        stmt = select(SubscriptionToNotificationsModel)
+
+        with Session(self.engine) as session:
+            return session.execute(stmt).scalars().all()
